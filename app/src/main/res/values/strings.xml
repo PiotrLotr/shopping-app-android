@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">ShoppingApp</string>
+    <string name="shopping_app">SHOPPING APP</string>
+    <string name="settings">Settings</string>
+    <string name="go_to_shopping_list">Go to shopping list</string>
+    <string name="Button">Button</string>
+    <string name="font_size">FONT SIZE</string>
+    <string name="dark_mode">DARK MODE</string>
+</resources>
