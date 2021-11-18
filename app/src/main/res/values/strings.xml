@@ -6,4 +6,7 @@
     <string name="Button">Button</string>
     <string name="font_size">FONT SIZE</string>
     <string name="dark_mode">DARK MODE</string>
+    <string name="bought">was bought</string>
+    <string name="add_new">Add new</string>
+    <string name="todo">TODO</string>
 </resources>

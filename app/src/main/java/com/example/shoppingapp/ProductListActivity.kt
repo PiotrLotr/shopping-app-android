@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.shoppingapp.databinding.ActivityProductListBinding
 import androidx.lifecycle.Observer
 
+
 class ProductListActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityProductListBinding
@@ -23,20 +24,19 @@ class ProductListActivity : AppCompatActivity() {
         )
 
         val productViewModel = ProductViewModel(application)
-        val adapter = CustomAdapter(productViewModel)
+        val adapter = CustomAdapter(productViewModel, this)
         binding.shoppingListRV.adapter = adapter
 
-        // navigation:
+        // ====================================== navigation:
         binding.returnToMenuBT2.setOnClickListener(){
             val intentReturnToMenu = Intent(this, MainActivity::class.java)
             startActivity(intentReturnToMenu)
         }
-
         binding.addNewBT.setOnClickListener(){
             val intentAddProduct = Intent(this, AddProductActivity::class.java)
             startActivity(intentAddProduct)
         }
-
+        // =================================================
 
         productViewModel.allProducts.observe(this, Observer
         {

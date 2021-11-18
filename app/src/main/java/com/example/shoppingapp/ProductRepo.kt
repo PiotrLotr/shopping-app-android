@@ -8,4 +8,8 @@ class ProductRepo(private val productDao: ProductDao) {
 
     fun delete(product: Product) = productDao.delete(product)
 
+//    fun getProductName(product: Product) = productDao.getProductName(product)
+
+
+
 }
