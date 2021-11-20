@@ -1,5 +1,6 @@
 package com.example.shoppingapp
 
+import android.content.ComponentName
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -24,6 +25,7 @@ class AddProductActivity : AppCompatActivity() {
 
         // logic:
         val productViewModel = ProductViewModel(application)
+
         binding.addBT.setOnClickListener {
             val product = Product(
                 productName = binding.nameTV.text.toString(),
@@ -35,6 +37,17 @@ class AddProductActivity : AppCompatActivity() {
             productViewModel.insert(product)
             val info = Toast.makeText(this, "Product added", Toast.LENGTH_LONG)
             info.show()
+
+            // broadcast to app2
+//             val broadcastIntent = Intent()
+//             broadcastIntent.putExtra("productID", product.id)
+//             broadcastIntent.putExtra("productName", product.productName)
+//             broadcastIntent.component = ComponentName(
+//              "",
+//              ""
+//             )
+//             sendBroadcast(broadcastIntent)
+
         }
 
     }

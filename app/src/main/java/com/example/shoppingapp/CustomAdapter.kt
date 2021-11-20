@@ -41,11 +41,9 @@ class CustomAdapter(private val productViewModel: ProductViewModel, context: Con
 
         holder.binding.modifyIB.setOnClickListener(){
             val editIntent = Intent(parentContext, EditProductActivity::class.java)
-            // passing info about product (serializable???)
             editIntent.putExtra("product_object", currentProduct)
             parentContext.startActivity(editIntent)
         }
-
 
     }
 

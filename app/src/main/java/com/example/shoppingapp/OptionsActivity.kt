@@ -8,7 +8,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import com.example.shoppingapp.databinding.ActivityOptionsBinding
 
-
 class OptionsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityOptionsBinding
@@ -63,6 +62,7 @@ class OptionsActivity : AppCompatActivity() {
         editor.putBoolean("NightMode", isSwitched)
         editor.apply()
     }
+
     private fun changeFontSize(editor: SharedPreferences.Editor) {
         // elements to change:
         binding.darkModeBT.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize)

@@ -1,10 +1,7 @@
 package com.example.shoppingapp
 
 import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
+import androidx.room.*
 
 @Dao
 interface ProductDao {
@@ -17,6 +14,9 @@ interface ProductDao {
 
     @Delete
     fun delete(product: Product)
+
+    @Update
+    fun update(product: Product)
 
 //    @Query("SELECT productName FROM product")
 //    fun getProductName(product: Product)
