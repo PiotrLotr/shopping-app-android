@@ -12,19 +12,17 @@ class AddProductActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAddProductBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
         binding = ActivityAddProductBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // navigation:
+        val productViewModel = ProductViewModel(application)
+
+        // buttons actions:
         binding.returnBT.setOnClickListener(){
             val intentReturn = Intent(this, ProductListActivity::class.java)
             startActivity(intentReturn)
         }
-
-        // logic:
-        val productViewModel = ProductViewModel(application)
 
         binding.addBT.setOnClickListener {
             val product = Product(
@@ -39,19 +37,17 @@ class AddProductActivity : AppCompatActivity() {
             info.show()
 
             // broadcast to app2
-//             val broadcastIntent = Intent()
-//             broadcastIntent.putExtra("productID", product.id)
-//             broadcastIntent.putExtra("productName", product.productName)
-//             broadcastIntent.component = ComponentName(
-//              "",
-//              ""
-//             )
-//             sendBroadcast(broadcastIntent)
-
+             val broadcastIntent = Intent()
+             broadcastIntent.component = ComponentName(
+              "com.example.secondapp",
+              "com.example.secondapp.MyReceiver"
+             )
+             broadcastIntent.putExtra(
+                 "productName",
+                 binding.nameTV.text.toString()
+             )
+             this.sendBroadcast(broadcastIntent)
         }
 
     }
-
-
-
 }
