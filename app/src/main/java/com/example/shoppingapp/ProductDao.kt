@@ -18,6 +18,7 @@ interface ProductDao {
     @Update
     fun update(product: Product)
 
+
 //    @Query("SELECT productName FROM product")
 //    fun getProductName(product: Product)
 

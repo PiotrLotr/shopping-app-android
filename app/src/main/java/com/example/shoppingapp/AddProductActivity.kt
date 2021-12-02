@@ -42,9 +42,13 @@ class AddProductActivity : AppCompatActivity() {
               "com.example.secondapp",
               "com.example.secondapp.MyReceiver"
              )
+//             broadcastIntent.putExtra(
+//                 "productID",
+//                 product.
+//             )
              broadcastIntent.putExtra(
-                 "productName",
-                 binding.nameTV.text.toString()
+                "productName",
+                binding.nameTV.text.toString()
              )
              this.sendBroadcast(broadcastIntent)
         }

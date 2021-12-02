@@ -18,7 +18,6 @@ class ProductViewModel(application: Application): AndroidViewModel(application) 
 
     fun update(product: Product) = repo.update(product)
 
-//    fun getProductName(product: Product) = repo.getProductName(product)
 
 
 }
