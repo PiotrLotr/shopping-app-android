@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.shoppingapp.databinding.ActivityProductListBinding
 import androidx.lifecycle.Observer
 
-
 class ProductListActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityProductListBinding
@@ -20,9 +19,9 @@ class ProductListActivity : AppCompatActivity() {
 
         binding.shoppingListRV.layoutManager = LinearLayoutManager(this)
         binding.shoppingListRV.addItemDecoration(
-            DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
-        )
+            DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
 
+        // not signed in
         val productViewModel = ProductViewModel(application)
         val adapter = CustomAdapter(productViewModel, this)
         binding.shoppingListRV.adapter = adapter

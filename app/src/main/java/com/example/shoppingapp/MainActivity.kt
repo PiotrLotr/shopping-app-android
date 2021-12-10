@@ -34,6 +34,10 @@ class MainActivity : AppCompatActivity() {
             val intentSettingsActivity = Intent(this, OptionsActivity::class.java)
             startActivity(intentSettingsActivity)
         }
+        binding.backToLoginBT.setOnClickListener(){
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+        }
 
 
     }
