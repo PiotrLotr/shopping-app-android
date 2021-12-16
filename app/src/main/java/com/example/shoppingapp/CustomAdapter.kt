@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppingapp.databinding.ElementBinding
 
-
 class CustomAdapter(private val productViewModel: ProductViewModel, context: Context
 ) : RecyclerView.Adapter<CustomAdapter.CustomViewHolder>() {
 
@@ -23,9 +22,10 @@ class CustomAdapter(private val productViewModel: ProductViewModel, context: Con
     }
 
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int, ) {
+
         val currentProduct = listOfProducts[position]
 
-        //text views:
+            //text views:
         holder.binding.productNameTV.text = currentProduct.productName
         holder.binding.priceTV.text = currentProduct.price
         holder.binding.amountTV.text = currentProduct.amount
@@ -34,16 +34,16 @@ class CustomAdapter(private val productViewModel: ProductViewModel, context: Con
         // buttons:
         holder.binding.wasBoughtCB.setOnClickListener(){
             currentProduct.isBought = holder.binding.wasBoughtCB.isChecked
-        }
+            }
         holder.binding.deleteIB.setOnClickListener {
             productViewModel.delete(currentProduct)
-        }
-
+            }
         holder.binding.modifyIB.setOnClickListener(){
             val editIntent = Intent(parentContext, EditProductActivity::class.java)
             editIntent.putExtra("product_object", currentProduct)
             parentContext.startActivity(editIntent)
-        }
+            }
+
 
     }
 

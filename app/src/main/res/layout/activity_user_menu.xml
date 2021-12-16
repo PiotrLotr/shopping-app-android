@@ -17,7 +17,7 @@
         app:srcCompat="@drawable/sztuczna_gruszka___owoc_do_dekoracji" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/userShoppingListBT"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="120dp"
@@ -38,7 +38,7 @@
         android:text="Statistics"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/imageView2"
-        app:layout_constraintTop_toBottomOf="@+id/button" />
+        app:layout_constraintTop_toBottomOf="@+id/userShoppingListBT" />
 
     <TextView
         android:id="@+id/welcomeTV"

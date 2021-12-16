@@ -24,8 +24,14 @@ class UserMenuActivity : AppCompatActivity() {
 
         // navigation ====================
         binding.signOutBT.setOnClickListener(){
+            fbAuth.signOut()
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
+        }
+
+        binding.userShoppingListBT.setOnClickListener(){
+            val intentShoppingListActivity = Intent(this, ProductListActivity::class.java)
+            startActivity(intentShoppingListActivity)
         }
 
 
