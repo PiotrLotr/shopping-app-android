@@ -5,10 +5,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppingapp.databinding.ElementBinding
 
-class FirebaseDataAdapter(listOfProducts: ArrayList<FirebaseProduct>) :
+class FirebaseDataAdapter(var firebaseProducts: List<FirebaseProduct>) :
     RecyclerView.Adapter<FirebaseDataAdapter.FirebaseDataHolder>() {
-
-    private var listOfProducts = listOfProducts
 
     class FirebaseDataHolder(val binding: ElementBinding): RecyclerView.ViewHolder(binding.root)
 
@@ -19,8 +17,7 @@ class FirebaseDataAdapter(listOfProducts: ArrayList<FirebaseProduct>) :
     }
 
     override fun onBindViewHolder(holder: FirebaseDataHolder, position: Int, ) {
-
-        val currentProduct =  listOfProducts[position]
+        val currentProduct =  firebaseProducts[position]
 
         //text views:
         holder.binding.productNameTV.text = currentProduct.name
@@ -41,16 +38,12 @@ class FirebaseDataAdapter(listOfProducts: ArrayList<FirebaseProduct>) :
 //            parentContext.startActivity(editIntent)
         }
 
-
-
     }
 
-    override fun getItemCount(): Int = listOfProducts.size
+    override fun getItemCount(): Int {
+        return firebaseProducts.size
+    }
 
-//    fun setProduct(products: List<Product>){
-//        listOfProducts = products
-//        notifyDataSetChanged()
-//    }
 
 
 }

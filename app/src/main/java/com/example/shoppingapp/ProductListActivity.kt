@@ -1,8 +1,10 @@
 package com.example.shoppingapp
 
+import android.content.ContentValues.TAG
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,8 +17,11 @@ import com.google.firebase.ktx.Firebase
 class ProductListActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityProductListBinding
-    private val db = Firebase.firestore
-    private var listOfFirebaseProducts =  ArrayList<FirebaseProduct>()
+
+    // firebase variables
+    private val firebaseRepo = FirebaseRepo ()
+    private var listOfFirebaseProducts: List<FirebaseProduct> = ArrayList()
+    val firebaseAdapter: FirebaseDataAdapter = FirebaseDataAdapter(listOfFirebaseProducts)
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -31,10 +36,9 @@ class ProductListActivity : AppCompatActivity() {
         )
         // ==============================================
 
-        // signed/not signed adapter ====================
-        if (FirebaseAuth.getInstance().currentUser != null) {
-            fetchDataFromFirebase()
-            val firebaseAdapter = FirebaseDataAdapter(listOfFirebaseProducts)
+        // firebase/local db adapter switcher ====================
+        if (firebaseRepo.getUser() != null) {
+            loadFirebaseProductsList()
             binding.shoppingListRV.adapter = firebaseAdapter
         } else {
             val productViewModel = ProductViewModel(application)
@@ -65,28 +69,19 @@ class ProductListActivity : AppCompatActivity() {
             val intentAddProduct = Intent(this, AddProductActivity::class.java)
             startActivity(intentAddProduct)
         }
-
     }
 
-    private fun fetchDataFromFirebase() {
-        db.collection("products")
-            .get()
-            .addOnCompleteListener {
-                if (it.isSuccessful) {
-                    for (document in it.result!!) {
-                        var firebaseProduct = FirebaseProduct(
-                            document.data["name"].toString(),
-                            document.data["price"].toString(),
-                            document.data["amount"].toString(),
-                            document.data["mark"].toString(),
-                            document.data["isBought"] as Boolean
-                        )
-                        listOfFirebaseProducts.add(firebaseProduct)
-                    }
-                } else {
-                    Toast.makeText(this, "Error: ${it.exception}", Toast.LENGTH_SHORT).show()
-                }
+    private fun loadFirebaseProductsList() {
+        firebaseRepo.getFirebaseProductsList().addOnCompleteListener{
+            if (it.isSuccessful){
+                listOfFirebaseProducts = it.result!!.toObjects(FirebaseProduct::class.java)
+                firebaseAdapter.firebaseProducts = listOfFirebaseProducts
+                firebaseAdapter.notifyDataSetChanged()
+            } else {
+                Log.d(TAG, "Error: ${it.exception!!.message}")
             }
+        }
+
     }
 
 

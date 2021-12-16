@@ -44,7 +44,6 @@ class CustomAdapter(private val productViewModel: ProductViewModel, context: Con
             parentContext.startActivity(editIntent)
             }
 
-
     }
 
     override fun getItemCount(): Int = listOfProducts.size
