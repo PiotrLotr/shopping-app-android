@@ -11,6 +11,7 @@ import com.example.shoppingapp.databinding.ActivityOptionsBinding
 class OptionsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityOptionsBinding
+    private val firebaseRepo = FirebaseRepo()
     var fontSize = 14f
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,8 +38,13 @@ class OptionsActivity : AppCompatActivity() {
             }
 
         binding.returnToMenuBT.setOnClickListener(){
-            val intentReturnToMenu = Intent(this, MainActivity::class.java)
-            startActivity(intentReturnToMenu)
+            if(firebaseRepo.getUser()!=null){
+                val intentReturnToUserMenu = Intent(this, UserMenuActivity::class.java)
+                startActivity(intentReturnToUserMenu)
+            } else {
+                val intentReturnToMenu = Intent(this, MainActivity::class.java)
+                startActivity(intentReturnToMenu)
+            }
         }
 
         // previous state

@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.widget.Toast
 import com.example.shoppingapp.databinding.ActivityAddProductBinding
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
@@ -16,6 +15,7 @@ class AddProductActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAddProductBinding
     private val db = Firebase.firestore
+    private val firebaseRepo = FirebaseRepo()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,8 +37,9 @@ class AddProductActivity : AppCompatActivity() {
             var mark = binding.markTV.text.toString()
             var isBought = false
 
-            if (FirebaseAuth.getInstance().currentUser != null){
-                addProductToFirebase(
+            if (firebaseRepo.getUser() != null){
+                firebaseRepo.addProductToFirebase(
+                    this,
                     productName,
                     price,
                     amount,
@@ -47,7 +48,7 @@ class AddProductActivity : AppCompatActivity() {
                 )
             } else {
                  var product = Product(
-                     productName = productName,
+                     name = productName,
                      price = price,
                      amount = amount,
                      mark = mark,
@@ -73,26 +74,8 @@ class AddProductActivity : AppCompatActivity() {
                 this.sendBroadcast(broadcastIntent)
                 }
             }
-
         }
 
-    fun addProductToFirebase(name: String, price: String, amount: String, mark: String, isBought: Boolean){
-        val product: MutableMap<String, Any> = HashMap()
-            product["name"] = name
-            product["price"] = price
-            product["amount"] = amount
-            product["mark"] = mark
-            product["isBought"] = isBought
-
-        db.collection("products")
-            .add(product)
-            .addOnSuccessListener {
-                Toast.makeText(this, "Product added to firebase", Toast.LENGTH_LONG).show()
-            }
-            .addOnFailureListener {
-                Toast.makeText(this, "Error while adding to firebase", Toast.LENGTH_LONG).show()
-            }
-    }
 
 }
 

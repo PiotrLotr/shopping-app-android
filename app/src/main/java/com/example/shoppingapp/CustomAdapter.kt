@@ -26,7 +26,7 @@ class CustomAdapter(private val productViewModel: ProductViewModel, context: Con
         val currentProduct = listOfProducts[position]
 
             //text views:
-        holder.binding.productNameTV.text = currentProduct.productName
+        holder.binding.productNameTV.text = currentProduct.name
         holder.binding.priceTV.text = currentProduct.price
         holder.binding.amountTV.text = currentProduct.amount
         holder.binding.productMarkTV.text = currentProduct.mark
