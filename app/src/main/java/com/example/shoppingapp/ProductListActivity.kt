@@ -5,14 +5,12 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.shoppingapp.databinding.ActivityProductListBinding
 import androidx.lifecycle.Observer
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
+
 
 class ProductListActivity : AppCompatActivity() {
 
@@ -21,7 +19,7 @@ class ProductListActivity : AppCompatActivity() {
     // firebase variables
     private val firebaseRepo = FirebaseRepo ()
     private var listOfFirebaseProducts: List<FirebaseProduct> = ArrayList()
-    val firebaseAdapter: FirebaseDataAdapter = FirebaseDataAdapter(listOfFirebaseProducts)
+    private val firebaseAdapter: FirebaseProductDataAdapter = FirebaseProductDataAdapter(this, listOfFirebaseProducts)
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -69,17 +67,20 @@ class ProductListActivity : AppCompatActivity() {
             val intentAddProduct = Intent(this, AddProductActivity::class.java)
             startActivity(intentAddProduct)
         }
+
     }
 
     private fun loadFirebaseProductsList() {
-        firebaseRepo.getFirebaseProductsList().addOnCompleteListener{
-            if (it.isSuccessful){
-                listOfFirebaseProducts = it.result!!.toObjects(FirebaseProduct::class.java)
-                firebaseAdapter.firebaseProducts = listOfFirebaseProducts
-                firebaseAdapter.notifyDataSetChanged()
-            } else {
-                Log.d(TAG, "Error: ${it.exception!!.message}")
-            }
+        firebaseRepo
+            .getFirebaseList("products")
+            .addOnCompleteListener{
+                if (it.isSuccessful){
+                    listOfFirebaseProducts = it.result!!.toObjects(FirebaseProduct::class.java)
+                    firebaseAdapter.firebaseProducts = listOfFirebaseProducts
+                    firebaseAdapter.notifyDataSetChanged()
+                } else {
+                    Log.d(TAG, "Error: ${it.exception!!.message}")
+                }
         }
 
     }

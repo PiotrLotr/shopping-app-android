@@ -10,7 +10,7 @@ import kotlinx.android.parcel.Parcelize
 data class Product (
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0,
-    var productName: String,
+    var name: String,
     var price: String,
     var amount: String,
     var mark: String,

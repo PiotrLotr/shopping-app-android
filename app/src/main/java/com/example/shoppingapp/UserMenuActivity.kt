@@ -3,11 +3,9 @@ package com.example.shoppingapp
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.example.shoppingapp.databinding.ActivityLoginBinding
 import com.example.shoppingapp.databinding.ActivityUserMenuBinding
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.ktx.Firebase
 
 class UserMenuActivity : AppCompatActivity() {
 
@@ -32,6 +30,16 @@ class UserMenuActivity : AppCompatActivity() {
         binding.userShoppingListBT.setOnClickListener(){
             val intentShoppingListActivity = Intent(this, ProductListActivity::class.java)
             startActivity(intentShoppingListActivity)
+        }
+
+        binding.mapBT.setOnClickListener(){
+            val intentMapActivity = Intent (this, MapsActivity::class.java)
+            startActivity(intentMapActivity)
+        }
+
+        binding.settBT.setOnClickListener(){
+            val intentSettingsActivity = Intent(this, OptionsActivity::class.java)
+            startActivity(intentSettingsActivity)
         }
 
 
