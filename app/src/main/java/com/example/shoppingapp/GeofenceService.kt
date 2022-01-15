@@ -1,73 +1,93 @@
 package com.example.shoppingapp
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
+import android.Manifest
 import android.app.PendingIntent
-import android.app.Service
-import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
-import android.os.Build
-import android.os.IBinder
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
+import android.content.pm.PackageManager
+import android.util.Log
+import androidx.core.app.ActivityCompat
+import com.google.android.gms.location.Geofence
+import com.google.android.gms.location.GeofencingRequest
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.model.LatLng
 
-class GeofenceService : Service() {
+class GeofenceService: Geofence{
 
-    // class variables:
-    private val channelName = "channel_name"
-    private val channelID = 1
-    private val notificationChannelDescription = "notification_description"
     var id = 0
-    val requestCode = 1
+    val GEOFENCE_RADIUS = 50
 
-    override fun onBind(intent: Intent): IBinder {
-        TODO("Return the communication channel to the service.")
-    }
-
-    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-
-        val launchIntent = Intent("ACTION_1")
-        launchIntent.component = ComponentName(
-            "com.example.shoppingapp",
-            "com.example.shoppingapp.EditProductActivity"
-        )
-
-        //       launchIntent?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-//      launchIntent?.putExtra("productID", intent.getStringExtra("productID"))
-//            launchIntent?.putExtra("productName", intent.getStringExtra("productName"))
-
-        val pendingIntent: PendingIntent = PendingIntent.getActivity(
-            this,
-            requestCode,
-            launchIntent,
-            PendingIntent.FLAG_ONE_SHOT
-        )
-        // generating notification
-        createNotificationChannel()
-        val notification = NotificationCompat.Builder(this, channelID.toString())
-            .setSmallIcon(R.mipmap.ic_launcher)
-            .setContentTitle("Added product: "+intent.getStringExtra("productName"))
-            .setContentText("Click to edit...")
-            .setContentIntent(pendingIntent)
-            .setAutoCancel(true)
+    private fun createGeofence(loc: LatLng): Geofence {
+        return Geofence.Builder()
+            .setRequestId("Geo${id++}")
+            .setCircularRegion(
+                loc.latitude,
+                loc.longitude,
+                GEOFENCE_RADIUS.toFloat()
+            )
+            .setExpirationDuration(60 * 60 * 1000)
+            .setTransitionTypes(
+                Geofence.GEOFENCE_TRANSITION_ENTER or Geofence.GEOFENCE_TRANSITION_EXIT
+            )
+            .setLoiteringDelay(1)
             .build()
-        val notificationManager = NotificationManagerCompat.from(this)
-        notificationManager.notify(id++, notification)
-
-        return START_STICKY
     }
 
-    private fun createNotificationChannel(){
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+    fun addGeofence(loc: LatLng, locName:String, context: Context) {
+        val geoClient = LocationServices.getGeofencingClient(context)
+        val geo = createGeofence(loc)
+
+        if (ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             return
-        val notificationChannel = NotificationChannel(
-            channelID.toString(),
-            channelName,
-            NotificationManager.IMPORTANCE_DEFAULT
+        }
+        Log.d("DEBUG_LOG", "INSIDE GEOFENCE API. ATTEMPT TO CREATE GEOFENCE...")
+        geoClient.addGeofences(
+            getGeofencingRequest(geo),
+            getGeofencePendingIntent(context, locName)
         )
-        notificationChannel.description = notificationChannelDescription
-        val  notificationManager  = NotificationManagerCompat.from(this)
-        notificationManager.createNotificationChannel(notificationChannel)
+            .addOnSuccessListener {
+                Log.d("DEBUG_LOG","GEOFENCE WAS ADDED, CHECK BROADCAST RECEIVER")
+                Log.d("DEBUG_LOG","GEO: ${geo}")
+                Log.d("DEBUG_LOG","CONTEXT: ${context}")
+            }
+            .addOnFailureListener {
+                Log.d("DEBUG_LOG","GEOFENCE WAS NOT ADDED")
+                Log.d("DEBUG_LOG","GEO: ${geo}")
+                Log.d("DEBUG_LOG","GEO: ${context}")
+                Log.d("DEBUG_LOG","GEO: ${it.stackTraceToString()}")
+            }
+
     }
+
+    private fun getGeofencingRequest(geofence: Geofence): GeofencingRequest {
+        return GeofencingRequest.Builder()
+        .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
+        .addGeofence(geofence)
+        .build()
+    }
+
+
+    private fun getGeofencePendingIntent(context: Context, locName:String): PendingIntent {
+        val intent = Intent(context, GeofenceReceiver::class.java)
+        intent.putExtra("locName", locName)
+        return PendingIntent.getBroadcast(
+            context,
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT
+        )
+    }
+
+    override fun getRequestId(): String {
+        TODO("Not yet implemented")
+    }
+
+
+
 
 }
+

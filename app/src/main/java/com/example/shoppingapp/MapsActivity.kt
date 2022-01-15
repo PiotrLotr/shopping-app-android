@@ -2,16 +2,15 @@ package com.example.shoppingapp
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Context
+import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
-import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import com.example.shoppingapp.databinding.ActivityMapsBinding
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.GoogleMap
@@ -22,41 +21,26 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.MarkerOptions
 
-
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var binding: ActivityMapsBinding
     private lateinit var map: GoogleMap
 
     private val firebaseRepo = FirebaseRepo()
-    private val geofenceAPI = GeofenceAPI()
+    private val geofenceAPI = GeofenceService()
 
-
-
+    @SuppressLint("MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        perms()
+        retrieveGeofenceOnMap()
+
         (supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment).getMapAsync(this)
 
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return
-        }
+        // ZOOMING AT CURRENT LOCATION
         LocationServices.getFusedLocationProviderClient(this).lastLocation
             .addOnSuccessListener {
                 var location = LatLng(it.latitude, it.longitude)
@@ -73,26 +57,18 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             LocationServices.getFusedLocationProviderClient(this).lastLocation
                 .addOnSuccessListener {
                     val currentLocation = LatLng(it.latitude, it.longitude)
+                    var locName = binding.locNamePT.text.toString()
                     // add marker
-                    map.addMarker(
-                        MarkerOptions().position(currentLocation)
-                            .title("Current location")
-                    ).showInfoWindow()
-                    map.addCircle(
-                        CircleOptions()
-                            .center(currentLocation)
-                            .strokeColor(Color.argb(50,70,70,70))
-                            .fillColor(Color.argb(70,150,150,150))
-                            .radius(geofenceAPI.GEOFENCE_RADIUS.toDouble())
-                    )
+                    addMarker(currentLocation, locName)
                     // add geofence
-                    geofenceAPI.addGeofence(currentLocation, this)
+                    Log.d("DEBUG_LOG", "ADDING SUCCESS. REQUEST TO GEOFENCE API...")
+                    geofenceAPI.addGeofence(currentLocation, locName, this)
                     // add location to firebase
                     firebaseRepo.addLocationToFirebase(
                         this,
-                        binding.locNamePT.text.toString(),
+                        locName,
                         binding.locDescriptionPT.text.toString(),
-                        100,
+                        50,
                         currentLocation.latitude,
                         currentLocation.longitude
                     )
@@ -100,47 +76,83 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     Toast.makeText(this, "Location adding failed.", Toast.LENGTH_SHORT).show()
                 }
         }
-
-
     }
 
+    @SuppressLint("MissingPermission")
     override fun onMapReady(map: GoogleMap) {
         this.map = map
+        perms()
         map.uiSettings.isZoomControlsEnabled = true
-
-
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return
-        }
         map.isMyLocationEnabled = true
 
         }
 
-
-//        var markedLocation = map.setLocationSource()
-//
-//        map.addMarker(
-//            MarkerOptions()
-//                .position(markedLocation)
-//                .title("Marker in Sydney")
-//        )
-
-
+    private fun addMarker(loc: LatLng, locName: String){
+        map.addMarker(
+            MarkerOptions().position(loc)
+                .title(locName)
+        ).showInfoWindow()
+        map.addCircle(
+            CircleOptions()
+                .center(loc)
+                .strokeColor(Color.argb(50,70,70,70))
+                .fillColor(Color.argb(70,150,150,150))
+                .radius(geofenceAPI.GEOFENCE_RADIUS.toDouble())
+        )
     }
+
+    private fun retrieveGeofenceOnMap(){
+        Log.d("DEBUG_LOG","ATTEMPTING RETRIEVE GEOPOINTS...")
+
+        var listOfFirebaseLocations: List<FirebaseLocation> = arrayListOf<FirebaseLocation>()
+
+        firebaseRepo.getFirebaseList("locations")
+            .addOnCompleteListener{
+                if (it.isSuccessful){
+                    listOfFirebaseLocations = it.result!!.toObjects(FirebaseLocation::class.java)
+
+                    Log.d("DEBUG_LOG","FIREBASE LOC LIST CONSISTS: ${listOfFirebaseLocations.size}")
+                    for(loc in listOfFirebaseLocations){
+                        if(loc != null) {
+                            var lat = loc.latitude!!
+                            var lng = loc.longitude!!
+                            var latLng = LatLng (lat, lng)
+                            addMarker(latLng, loc.name.toString())
+                            geofenceAPI.addGeofence(latLng,loc.name.toString(), this)
+                            Log.d("DEBUG_LOG","LOC: ${lat} + ${lng}")
+                        }
+                    }
+                } else {
+                    Log.d(ContentValues.TAG, "Error: ${it.exception!!.message}")
+                }
+            }
+    }
+
+    private fun perms() {
+        val permissions = arrayOf(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.ACCESS_BACKGROUND_LOCATION
+        )
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED ||
+            ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED ||
+            ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_BACKGROUND_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestPermissions(permissions, 1)
+        }
+    }
+
+
+}
 
 
 
