@@ -6,17 +6,16 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.util.Log
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofencingRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
 
-class GeofenceAPI: Geofence{
+class GeofenceService: Geofence{
 
     var id = 0
-    val GEOFENCE_RADIUS = 500
+    val GEOFENCE_RADIUS = 50
 
     private fun createGeofence(loc: LatLng): Geofence {
         return Geofence.Builder()
@@ -34,7 +33,7 @@ class GeofenceAPI: Geofence{
             .build()
     }
 
-    fun addGeofence(loc: LatLng, context: Context) {
+    fun addGeofence(loc: LatLng, locName:String, context: Context) {
         val geoClient = LocationServices.getGeofencingClient(context)
         val geo = createGeofence(loc)
 
@@ -48,7 +47,7 @@ class GeofenceAPI: Geofence{
         Log.d("DEBUG_LOG", "INSIDE GEOFENCE API. ATTEMPT TO CREATE GEOFENCE...")
         geoClient.addGeofences(
             getGeofencingRequest(geo),
-            getGeofencePendingIntent(context)
+            getGeofencePendingIntent(context, locName)
         )
             .addOnSuccessListener {
                 Log.d("DEBUG_LOG","GEOFENCE WAS ADDED, CHECK BROADCAST RECEIVER")
@@ -72,8 +71,9 @@ class GeofenceAPI: Geofence{
     }
 
 
-    private fun getGeofencePendingIntent(context: Context): PendingIntent {
+    private fun getGeofencePendingIntent(context: Context, locName:String): PendingIntent {
         val intent = Intent(context, GeofenceReceiver::class.java)
+        intent.putExtra("locName", locName)
         return PendingIntent.getBroadcast(
             context,
             0,

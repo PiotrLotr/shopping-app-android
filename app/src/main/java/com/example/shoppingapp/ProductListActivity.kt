@@ -27,6 +27,8 @@ class ProductListActivity : AppCompatActivity() {
         binding = ActivityProductListBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+
+
         // recycler view options ========================
         binding.shoppingListRV.layoutManager = LinearLayoutManager(this)
         binding.shoppingListRV.addItemDecoration(
@@ -50,7 +52,9 @@ class ProductListActivity : AppCompatActivity() {
                 }
             })
         }
+
         // =============================================
+
 
         // ====================================== navigation:
         binding.returnToMenuBT2.setOnClickListener() {

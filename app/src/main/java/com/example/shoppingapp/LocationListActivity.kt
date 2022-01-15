@@ -18,7 +18,6 @@ class LocationListActivity : AppCompatActivity() {
     private var listOfFirebaseLocations: List<FirebaseLocation> = ArrayList()
     private val firebaseAdapter: FirebaseLocationDataAdapter = FirebaseLocationDataAdapter(this, listOfFirebaseLocations)
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLocationListBinding.inflate(layoutInflater)
@@ -33,9 +32,8 @@ class LocationListActivity : AppCompatActivity() {
         binding.locListRV.adapter = firebaseAdapter
     }
 
-    private fun loadFirebaseLocationList() {
-        firebaseRepo
-            .getFirebaseList("locations")
+    fun loadFirebaseLocationList() {
+        firebaseRepo.getFirebaseList("locations")
             .addOnCompleteListener{
                 if (it.isSuccessful){
                     listOfFirebaseLocations = it.result!!.toObjects(FirebaseLocation::class.java)
@@ -44,7 +42,9 @@ class LocationListActivity : AppCompatActivity() {
                 } else {
                     Log.d(ContentValues.TAG, "Error: ${it.exception!!.message}")
                 }
-        }
+            }
     }
+
+
 
 }

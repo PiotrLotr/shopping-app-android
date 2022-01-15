@@ -25,7 +25,7 @@
             android:exported="true">
         </receiver>
         <service
-            android:name=".GeofenceService"
+            android:name=".NotificationService"
             android:enabled="true"
             android:exported="true">
         </service>

@@ -1,17 +1,15 @@
 package com.example.shoppingapp
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.app.Service
+import android.app.*
 import android.content.ComponentName
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 
-class GeofenceService : Service() {
+class NotificationService : Service() {
 
     // class variables:
     private val channelName = "channel_name"
@@ -25,6 +23,7 @@ class GeofenceService : Service() {
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
+        Log.d("DEBUG_LOG", "NOTIFICATION SERVICE...")
 
         val launchIntent = Intent(intent)
         launchIntent.component = ComponentName(
@@ -40,15 +39,19 @@ class GeofenceService : Service() {
         )
         // generating notification
         createNotificationChannel()
-        val notification = NotificationCompat.Builder(this, channelID.toString())
-            .setSmallIcon(R.mipmap.ic_launcher)
-            .setContentTitle("GEOFENCE ADDED: ")
-            .setContentText("Click to edit...")
-            .setContentIntent(pendingIntent)
-            .setAutoCancel(true)
-            .build()
-        val notificationManager = NotificationManagerCompat.from(this)
-        notificationManager.notify(id++, notification)
+        // build notification
+        val locName = intent.getStringExtra("locName")
+        val variant = intent.getStringExtra("VARIANT")
+        if(variant.equals("ENTRY")) {
+            val notification = buildNotification("entered: ", locName.toString(), pendingIntent)
+            val notificationManager = NotificationManagerCompat.from(this)
+            notificationManager.notify(id++, notification)
+        } else {
+            val notification = buildNotification("exited: ", locName.toString(), pendingIntent)
+            val notificationManager = NotificationManagerCompat.from(this)
+            notificationManager.notify(id++, notification)
+        }
+
 
         return START_STICKY
     }
@@ -66,4 +69,13 @@ class GeofenceService : Service() {
         notificationManager.createNotificationChannel(notificationChannel)
     }
 
+    private fun buildNotification(variant:String, locName:String, pendingIntent:PendingIntent): Notification {
+        return NotificationCompat.Builder(this, channelID.toString())
+            .setSmallIcon(R.mipmap.ic_launcher)
+            .setContentTitle("You have ${variant}: ${locName}")
+            .setContentText("Click to view all locations")
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true)
+            .build()
+    }
 }

@@ -1,6 +1,8 @@
 package com.example.shoppingapp
 
+import android.content.ContentValues
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
@@ -70,6 +72,20 @@ class FirebaseRepo {
                 Toast.makeText(context, "Error while adding to firebase", Toast.LENGTH_LONG).show()
             }
     }
+    fun loadFirebaseLocationList(): List<FirebaseLocation> {
+        var listOfFirebaseLocations: List<FirebaseLocation> = ArrayList()
+        getFirebaseList("locations")
+            .addOnCompleteListener{
+                if (it.isSuccessful){
+                    listOfFirebaseLocations = it.result!!.toObjects(FirebaseLocation::class.java)
+                } else {
+                    Log.d(ContentValues.TAG, "Error: ${it.exception!!.message}")
+                }
+            }
+        return listOfFirebaseLocations
+    }
+
+
 
 
     fun getFirebaseCollection(collectionName: String): CollectionReference {
