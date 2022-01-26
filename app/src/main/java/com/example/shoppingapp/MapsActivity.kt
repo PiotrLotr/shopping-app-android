@@ -27,7 +27,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var map: GoogleMap
 
     private val firebaseRepo = FirebaseRepo()
-    private val geofenceAPI = GeofenceService()
+    private val geofenceService = GeofenceService()
 
     @SuppressLint("MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,7 +62,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     addMarker(currentLocation, locName)
                     // add geofence
                     Log.d("DEBUG_LOG", "ADDING SUCCESS. REQUEST TO GEOFENCE API...")
-                    geofenceAPI.addGeofence(currentLocation, locName, this)
+                    geofenceService.addGeofence(currentLocation, locName, this)
                     // add location to firebase
                     firebaseRepo.addLocationToFirebase(
                         this,
@@ -97,7 +97,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 .center(loc)
                 .strokeColor(Color.argb(50,70,70,70))
                 .fillColor(Color.argb(70,150,150,150))
-                .radius(geofenceAPI.GEOFENCE_RADIUS.toDouble())
+                .radius(geofenceService.GEOFENCE_RADIUS.toDouble())
         )
     }
 
@@ -118,7 +118,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                             var lng = loc.longitude!!
                             var latLng = LatLng (lat, lng)
                             addMarker(latLng, loc.name.toString())
-                            geofenceAPI.addGeofence(latLng,loc.name.toString(), this)
+                            geofenceService.addGeofence(latLng,loc.name.toString(), this)
                             Log.d("DEBUG_LOG","LOC: ${lat} + ${lng}")
                         }
                     }

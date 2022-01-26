@@ -25,7 +25,7 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/sztuczna_gruszka___owoc_do_dekoracji" />
+        app:srcCompat="@drawable/pear" />
 
     <EditText
         android:id="@+id/emailTV"
