@@ -39,7 +39,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/sztuczna_gruszka___owoc_do_dekoracji" />
+        app:srcCompat="@drawable/pear" />
 
     <Button
         android:id="@+id/backToLoginBT"

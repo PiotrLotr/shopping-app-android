@@ -10,6 +10,9 @@
     <string name="add_new">Add new</string>
     <string name="todo">TODO</string>
     <string name="title_activity_maps">MapsActivity</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
+    <string name="app_widget_description">This is an app widget description</string>
     <!--    <color name="custom_1">#5A9269</color>-->
 
 </resources>
